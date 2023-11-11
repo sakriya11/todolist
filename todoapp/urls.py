@@ -6,11 +6,14 @@ from todoapp.views import (
     updateUserListStatus,
     deleteUserList,
     getIndividualUserList,
+    UserLogin,
 )
 from todoapp.views import createUserList
 
+
 urlpatterns = [
     path("registration/", UserRegistrationView, name="registration"),
+    path("login/", UserLogin, name="userlogin"),
     path("create/todolist/", createUserList, name="todolist"),
     path("update/todolist/<int:pk>/", updateUserList, name="updatetodolist"),
     path(

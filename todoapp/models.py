@@ -19,3 +19,4 @@ class Todolist(models.Model):
     title = models.CharField(max_length=70)
     # lists = models.TextField()
     status = models.BooleanField(default=False)
+    todoTypes = models.CharField(max_length=15, null=True)

@@ -23,3 +23,9 @@ class UserToDoListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todolist
         fields = "__all__"
+
+
+# validation of the username and the password passed by the user
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.CharField()
+    password = serializers.CharField(style={"input_type": "password"})
