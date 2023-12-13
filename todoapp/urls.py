@@ -7,6 +7,7 @@ from todoapp.views import (
     deleteUserList,
     getIndividualUserList,
     UserLogin,
+    getAllUserList,
 )
 from todoapp.views import createUserList
 
@@ -26,5 +27,10 @@ urlpatterns = [
         "get/data/<int:user_id>",
         getIndividualUserList,
         name="getIndividualUserList",
+    ),
+    path(
+        "get/data/",
+        getAllUserList,
+        name="getAllUserList",
     ),
 ]

@@ -14,7 +14,7 @@ class User(models.Model):
 # list model
 class Todolist(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE
+        User, on_delete=models.CASCADE, null=True
     )  # cascade is to delete the list if user is deleted
     title = models.CharField(max_length=70)
     # lists = models.TextField()

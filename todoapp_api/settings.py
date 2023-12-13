@@ -15,6 +15,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1"]
 
+# CORS_ALLOWED_ORIGINS = ["127.0.0.1", "192.168.1.150:3000 "]
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Application definition
 
@@ -28,6 +31,7 @@ INSTALLED_APPS = [
     "todoapp",
     "rest_framework",
     "rest_framework_simplejwt",
+    "corsheaders",
 ]
 
 REST_FRAMEWORK = {
@@ -45,6 +49,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 
@@ -75,7 +80,7 @@ WSGI_APPLICATION = "todoapp_api.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "mytodoapp",
+        "NAME": "newtodolist",
         "USER": "root",
         "PASSWORD": "",
         "HOST": "localhost",

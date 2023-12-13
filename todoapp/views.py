@@ -15,6 +15,7 @@ from django.contrib.auth import authenticate
 def UserRegistrationView(request):
     if request.method == "POST":
         serializer = RegistrationSerializer(data=request.data)
+        print("dataaaaaaaaaaaaa", request.data)
         if serializer.is_valid():
             user = serializer.save()
             userData = RegistrationSerializer(user).data
@@ -30,6 +31,7 @@ def UserRegistrationView(request):
 def UserLogin(request):
     try:
         userCredentialsSerializer = UserLoginSerializer(data=request.data)
+        print("test", userCredentialsSerializer)
     except:
         return Response(
             {"message": "User credential error"},
@@ -145,4 +147,23 @@ def deleteUserList(request, pk):
         return Response(
             {"message": "List deleted succesfully"},
             status=status.HTTP_201_CREATED,
+        )
+
+
+# to fetch the all users lists
+@api_view(["GET"])
+def getAllUserList(request):
+    try:
+        todolist = Todolist.objects.all()
+    except Todolist.DoesNotExist:
+        return Response(
+            {"message": "user todo list does not exist"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    if request.method == "GET":
+        serializer = UserToDoListSerializer(todolist, many=True)
+
+        return Response(
+            {"message": "Data retrived succesfully", "data": serializer.data},
+            status=status.HTTP_200_OK,
         )
