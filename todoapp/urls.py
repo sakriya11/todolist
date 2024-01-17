@@ -6,11 +6,16 @@ from todoapp.views import (
     updateUserListStatus,
     deleteUserList,
     getIndividualUserList,
+    UserLogin,
+    getAllUserList,
+    getTodoListStatus,
 )
 from todoapp.views import createUserList
 
+
 urlpatterns = [
     path("registration/", UserRegistrationView, name="registration"),
+    path("login/", UserLogin.as_view(), name="api-login"),
     path("create/todolist/", createUserList, name="todolist"),
     path("update/todolist/<int:pk>/", updateUserList, name="updatetodolist"),
     path(
@@ -20,8 +25,18 @@ urlpatterns = [
     ),
     path("delete/todolist/<int:pk>/", deleteUserList, name="deleteUserList"),
     path(
-        "get/data/<int:user_id>",
+        "get/data/<int:pk>/",
         getIndividualUserList,
         name="getIndividualUserList",
+    ),
+    path(
+        "get/data/",
+        getAllUserList,
+        name="getAllUserList",
+    ),
+    path(
+        "get/status/data/<str:statusQuery>/",
+        getTodoListStatus,
+        name="getTodoListStatus",
     ),
 ]
