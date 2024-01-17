@@ -29,3 +29,11 @@ class UserToDoListSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.CharField()
     password = serializers.CharField(style={"input_type": "password"})
+
+    # serialize for todolist status
+
+
+class UsertodolistStatus(serializers.ModelSerializer):
+    class Meta:
+        model = Todolist
+        fields = "__all__"

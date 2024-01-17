@@ -5,9 +5,12 @@ from todoapp.serializations import (
     UserToDoListSerializer,
     UserLoginSerializer,
     RegistrationSerializer,
+    UsertodolistStatus,
 )
 from todoapp.models import Todolist
 from django.contrib.auth import authenticate
+from rest_framework import views, status
+from rest_framework.authtoken.models import Token
 
 
 # user registration
@@ -27,34 +30,23 @@ def UserRegistrationView(request):
 
 
 # user login
-@api_view(["POST"])
-def UserLogin(request):
-    try:
-        userCredentialsSerializer = UserLoginSerializer(data=request.data)
-        print("test", userCredentialsSerializer)
-    except:
-        return Response(
-            {"message": "User credential error"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-    if request.method == "POST":
-        if userCredentialsSerializer.is_valid():
-            email = userCredentialsSerializer.validated_data["email"]
-            password = userCredentialsSerializer.validated_data["password"]
-            user = authenticate(request, email=email, password=password)
-            if user is not None:
-                return Response(
-                    {"message": "User looged in succesfully"}, status=status.HTTP_200_OK
-                )
-            else:
-                return Response(
-                    {"message": "username or password is incorrect"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-        return Response(
-            {userCredentialsSerializer.errors},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+class UserLogin(views.APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = UserLoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
+        password = serializer.validated_data["password"]
+
+        user = authenticate(request, email=email, password=password)
+
+        if user:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({"token": token.key}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+            )
 
 
 # to fetch the individual users lists
@@ -166,4 +158,58 @@ def getAllUserList(request):
         return Response(
             {"message": "Data retrived succesfully", "data": serializer.data},
             status=status.HTTP_200_OK,
+        )
+
+
+# to fetch the individual users lists
+@api_view(["GET"])
+def getIndividualUserList(request, pk):
+    try:
+        todolist = Todolist.objects.get(pk=pk)
+    except Todolist.DoesNotExist:
+        return Response(
+            {"message": "user todo list does not exist"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    if request.method == "GET":
+        serializer = UserToDoListSerializer(todolist)
+
+        return Response(
+            {"message": "Data retrived succesfully", "data": serializer.data},
+            status=status.HTTP_200_OK,
+        )
+
+
+# to filter the list in basis of todo status
+@api_view(["GET"])
+def getTodoListStatus(request, statusQuery):
+    try:
+        if statusQuery == "all":
+            todolistStatus = Todolist.objects.all()
+            serializer = UsertodolistStatus(todolistStatus, many=True)
+
+            return Response(
+                {"message": "Data retrived succesfully", "data": serializer.data},
+                status=status.HTTP_200_OK,
+            )
+
+        todolistStatus = Todolist.objects.filter(status=statusQuery)
+        if not (todolistStatus):
+            return Response(
+                {"message": "User todo list does not exist for the given status"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if request.method == "GET":
+            serializer = UsertodolistStatus(todolistStatus, many=True)
+
+            return Response(
+                {"message": "Data retrived succesfully", "data": serializer.data},
+                status=status.HTTP_200_OK,
+            )
+
+    except Todolist.DoesNotExist:
+        return Response(
+            {"message": "user todo list does not exist"},
+            status=status.HTTP_404_NOT_FOUND,
         )
